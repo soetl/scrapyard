@@ -5,18 +5,19 @@
       :placeholder="placeholder"
       :extensions="extensions"
       :style="{ height: '100vh' }"
-    ></codemirror>
+    />
   </v-main>
 </template>
 
 <script setup>
 import { oneDark } from "@codemirror/theme-one-dark";
 
-const props = defineProps(["placeholder", "global_theme"]);
+const props = defineProps(["placeholder"]);
 
 const code = inject("code");
+const theme = inject("theme");
 
 const extensions = computed(() => {
-  return props.global_theme === "light" ? [] : [oneDark];
+  return theme.value === "light" ? [] : [oneDark];
 });
 </script>

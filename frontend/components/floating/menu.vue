@@ -8,26 +8,24 @@
         icon="mdi-dots-vertical"
         @click="expand = !expand"
         size="40"
-      ></v-btn>
+      />
       <v-scroll-y-reverse-transition origin="top right">
         <div v-if="expand" class="d-flex flex-column">
-          <v-btn class="mb-2" icon="mdi-account" size="40"></v-btn>
+          <v-btn class="mb-2" icon="mdi-account" size="40" />
           <v-btn
             class="mb-2"
             :icon="
-              props.theme === 'light'
-                ? 'mdi-weather-sunny'
-                : 'mdi-weather-night'
+              theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'
             "
-            @click="this.$emit('toggleTheme')"
+            @click="toggleTheme"
             size="40"
-          ></v-btn>
-          <v-btn class="mb-2" icon="mdi-login-variant" size="40" >
-            <v-icon icon="mdi-login-variant"></v-icon>
+          />
+          <v-btn class="mb-2" icon="mdi-login-variant" size="40">
+            <v-icon icon="mdi-login-variant" />
             <dialog-log-in />
           </v-btn>
           <v-btn icon="mdi-logout-variant" size="40">
-            <v-icon icon="mdi-logout-variant"></v-icon>
+            <v-icon icon="mdi-logout-variant" />
             <dialog-log-out />
           </v-btn>
         </div>
@@ -39,9 +37,8 @@
 <script setup>
 const expand = ref(false);
 
-const props = defineProps({
-  theme: String,
-});
+const theme = inject("theme");
+const toggleTheme = inject("toggleTheme");
 </script>
 
 <style scoped>

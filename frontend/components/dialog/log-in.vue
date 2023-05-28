@@ -16,7 +16,7 @@
                   (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
                 ]"
                 required
-              ></v-text-field>
+              />
             </v-col>
             <v-col cols="12" class="py-0">
               <v-text-field
@@ -24,13 +24,13 @@
                 v-model="password"
                 :rules="[(v) => !!v || 'Password is required']"
                 required
-              ></v-text-field>
+              />
             </v-col>
           </v-row>
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
+        <v-spacer />
         <v-btn color="primary" variant="text" @click="isLogIn = !isLogIn">
           To Sign Up dialog
         </v-btn>
@@ -60,7 +60,7 @@
                 ]"
                 counter="32"
                 required
-              ></v-text-field>
+              />
             </v-col>
             <v-col cols="12" class="py-0">
               <v-text-field
@@ -76,7 +76,7 @@
                 ]"
                 counter="24"
                 required
-              ></v-text-field>
+              />
               <v-text-field
                 label="Repeat Password"
                 hint="A strong password must contain mixed case letters and symbols"
@@ -85,13 +85,13 @@
                   (v) => v === password || 'Password does not match',
                 ]"
                 required
-              ></v-text-field>
+              />
             </v-col>
           </v-row>
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
+        <v-spacer />
         <v-btn color="primary" variant="text" @click="isLogIn = !isLogIn"
           >To Log In dialog</v-btn
         >

@@ -1,11 +1,9 @@
 <template>
   <teleport to="body">
-    <v-btn
-      class="save"
-      color="success"
-      icon="mdi-content-save"
-      size="40"
-    ></v-btn>
+    <v-btn class="save" color="success" icon="mdi-content-save" size="40">
+      <v-icon icon="mdi-content-save" />
+      <dialog-save-text />
+    </v-btn>
   </teleport>
 </template>
 
