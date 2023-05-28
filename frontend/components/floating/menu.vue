@@ -11,7 +11,12 @@
       />
       <v-scroll-y-reverse-transition origin="top right">
         <div v-if="expand" class="d-flex flex-column">
-          <v-btn class="mb-2" icon="mdi-account" size="40" />
+          <v-btn
+            v-show="userStore.loggedIn"
+            class="mb-2"
+            icon="mdi-account"
+            size="40"
+          />
           <v-btn
             class="mb-2"
             :icon="
@@ -20,14 +25,19 @@
             @click="toggleTheme"
             size="40"
           />
-          <v-btn class="mb-2" icon="mdi-login-variant" size="40">
-            <v-icon icon="mdi-login-variant" />
-            <dialog-log-in />
-          </v-btn>
-          <v-btn icon="mdi-logout-variant" size="40">
-            <v-icon icon="mdi-logout-variant" />
-            <dialog-log-out />
-          </v-btn>
+          <v-btn
+            v-show="!userStore.loggedIn"
+            class="mb-2"
+            icon="mdi-login-variant"
+            size="40"
+            @click="logInDialog = true"
+          />
+          <v-btn
+            v-show="userStore.loggedIn"
+            icon="mdi-logout-variant"
+            size="40"
+            @click="logOutDialog = true"
+          />
         </div>
       </v-scroll-y-reverse-transition>
     </div>
@@ -35,10 +45,16 @@
 </template>
 
 <script setup>
+import { useUserStore } from "~/stores/user";
+
 const expand = ref(false);
+
+const userStore = useUserStore();
 
 const theme = inject("theme");
 const toggleTheme = inject("toggleTheme");
+const logInDialog = inject("logInDialog");
+const logOutDialog = inject("logOutDialog");
 </script>
 
 <style scoped>

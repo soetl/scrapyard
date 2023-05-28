@@ -1,5 +1,6 @@
 <template>
-  <v-sheet class="mt-5 h-screen"
+  <floating-menu />
+  <v-sheet class="mt-5 h-auto"
     ><span>{{ route.params.id }}</span></v-sheet
   >
 </template>

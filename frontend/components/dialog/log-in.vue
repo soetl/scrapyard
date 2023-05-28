@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="512" activator="parent">
+  <v-dialog v-model="dialog" persistent width="512">
     <v-card v-show="isLogIn">
       <v-card-title>
         <span class="text-h5">Log In</span>
@@ -9,11 +9,14 @@
           <v-row>
             <v-col cols="12" class="py-0">
               <v-text-field
-                label="Email"
-                v-model="email"
+                label="Username"
+                v-model="username"
                 :rules="[
-                  (v) => !!v || 'Email is required',
-                  (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+                  (v) => !!v || 'Username is required',
+                  (v) =>
+                    v.length >= 4 || 'Username must be at least 4 characters',
+                  (v) =>
+                    v.length <= 32 || 'Username must be at most 16 characters',
                 ]"
                 required
               />
@@ -49,14 +52,15 @@
           <v-row>
             <v-col cols="12" class="py-0">
               <v-text-field
-                label="Email"
-                hint="Your email address"
-                v-model="email"
+                label="Username"
+                hint="Your username"
+                v-model="username"
                 :rules="[
-                  (v) => !!v || 'Email is required',
-                  (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+                  (v) => !!v || 'username is required',
                   (v) =>
-                    v.length <= 32 || 'E-mail must be at most 32 characters',
+                    v.length >= 4 || 'Username must be at least 4 characters',
+                  (v) =>
+                    v.length <= 32 || 'Username must be at most 16 characters',
                 ]"
                 counter="32"
                 required
@@ -113,21 +117,26 @@
 </template>
 
 <script setup>
-const dialog = ref(false);
+import { useUserStore } from "~/stores/user";
+
+const dialog = inject("logInDialog");
 const isLogIn = ref(true);
 
-const email = ref("");
+const username = ref("");
 const password = ref("");
 
 const signUpForm = ref(null);
 const logInForm = ref(null);
 
+const userStore = useUserStore();
+
 async function logIn() {
   const { valid } = await logInForm.value.validate();
 
   if (valid) {
-    alert("Log In");
-    this.dialog = false;
+    userStore.logIn(username.value, password.value);
+    dialog.value = false;
+    clearForm();
   }
 }
 
@@ -135,8 +144,14 @@ async function signUp() {
   const { valid } = await signUpForm.value.validate();
 
   if (valid) {
-    alert("Log In");
-    this.dialog = false;
+    userStore.logIn(username.value, password.value);
+    dialog.value = false;
+    clearForm();
   }
+}
+
+function clearForm() {
+  username.value = "";
+  password.value = "";
 }
 </script>

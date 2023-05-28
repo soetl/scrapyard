@@ -1,11 +1,32 @@
 <template>
   <teleport to="body">
-    <v-btn class="save" color="success" icon="mdi-content-save" size="40">
-      <v-icon icon="mdi-content-save" />
-      <dialog-save-text />
-    </v-btn>
+    <v-btn
+      class="save"
+      color="success"
+      icon="mdi-content-save"
+      size="40"
+      @click="saveText"
+    />
   </teleport>
 </template>
+
+<script setup>
+import { useUserStore } from '~/stores/user';
+
+const saveTextDialog = inject("saveTextDialog");
+const logInDialog = inject("logInDialog");
+
+const userStore = useUserStore();
+
+function saveText() {
+  if (!userStore.loggedIn) {
+    logInDialog.value = true;
+    return;
+  }
+
+  saveTextDialog.value = true;
+}
+</script>
 
 <style scoped>
 .save {
