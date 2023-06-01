@@ -1,5 +1,5 @@
 <template>
-  <div ref="window">
+  <v-main ref="window">
     <v-overlay
       v-model="isOverDropZone"
       class="align-center justify-center"
@@ -7,12 +7,12 @@
     >
       <span>Drop your file here.</span>
     </v-overlay>
-    <floating-menu />
+    <floating-menu :home-button="false" />
     <code-editor :placeholder="placeholder" />
     <floating-save />
     <dialog-save-file :context="saveFileContext" />
     <dialog-save-text />
-  </div>
+  </v-main>
 </template>
 
 <script setup>

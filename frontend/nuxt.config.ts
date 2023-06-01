@@ -4,5 +4,10 @@ export default defineNuxtConfig({
   build: {
     transpile: ["vuetify"],
   },
-  modules: ["@vueuse/nuxt", "@pinia/nuxt"],
+  modules: ["@vueuse/nuxt", "@pinia/nuxt", '@pinia-plugin-persistedstate/nuxt'],
+  runtimeConfig: {
+    public: {
+      baseURL: process.env.BASE_URL || 'http://localhost:8080',
+    },
+  },
 });

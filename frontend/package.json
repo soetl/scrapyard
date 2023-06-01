@@ -17,6 +17,7 @@
   "dependencies": {
     "@codemirror/theme-one-dark": "^6.1.2",
     "@mdi/font": "^7.2.96",
+    "@pinia-plugin-persistedstate/nuxt": "^1.1.1",
     "@pinia/nuxt": "^0.4.11",
     "codemirror": "^6.0.1",
     "pinia": "^2.1.3",

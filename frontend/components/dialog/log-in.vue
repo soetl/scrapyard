@@ -31,6 +31,7 @@
             </v-col>
           </v-row>
         </v-form>
+        <span class="status" v-if="status.length > 0">{{ status }}</span>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -93,6 +94,7 @@
             </v-col>
           </v-row>
         </v-form>
+        <span class="status" v-if="status.length > 0">{{ status }}</span>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -124,34 +126,84 @@ const isLogIn = ref(true);
 
 const username = ref("");
 const password = ref("");
+const status = ref("");
 
 const signUpForm = ref(null);
 const logInForm = ref(null);
 
 const userStore = useUserStore();
+const cookie = useCookie();
 
 async function logIn() {
+  status.value = "";
   const { valid } = await logInForm.value.validate();
 
   if (valid) {
-    userStore.logIn(username.value, password.value);
-    dialog.value = false;
-    clearForm();
+    logInProceed("/api/v1/users/login");
   }
 }
 
 async function signUp() {
+  status.value = "";
   const { valid } = await signUpForm.value.validate();
 
   if (valid) {
-    userStore.logIn(username.value, password.value);
-    dialog.value = false;
-    clearForm();
+    logInProceed("/api/v1/users", true);
   }
 }
 
+function logInProceed(path, isSignUp = false) {
+  apiFetch(path, {
+    method: "POST",
+    body: {
+      user: {
+        username: username.value,
+        password: password.value,
+      },
+    },
+  })
+    .catch((error) => {
+      if (error.status === 422) {
+        status.value = isSignUp
+          ? "Username already taken."
+          : "Invalid username or password.";
+      } else {
+        console.log(error);
+      }
+    })
+    .then((response) => {
+      if (response !== undefined) {
+        const user = response.user;
+        userStore.logIn(user.username, user.token);
+        dialog.value = false;
+      }
+    });
+}
+
+watch(
+  () => dialog.value,
+  (value) => {
+    clearForm();
+    isLogIn.value = true;
+  }
+);
+
+watch(
+  () => isLogIn.value,
+  (value) => {
+    clearForm();
+    status.value = "";
+  }
+);
+
 function clearForm() {
-  username.value = "";
-  password.value = "";
+  username.value = null;
+  password.value = null;
 }
 </script>
+
+<style scoped>
+.status {
+  color: #ff5252;
+}
+</style>

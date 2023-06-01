@@ -46,7 +46,6 @@ const pastesStore = usePastesStore();
 
 const props = defineProps({
   context: {
-    type: Object,
     required: true,
   },
 });

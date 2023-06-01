@@ -3,7 +3,7 @@
     <v-card>
       <v-card-title>Save Text</v-card-title>
       <v-card-text>
-        <v-text-field v-model="title" label="Title" dense />
+        <v-text-field v-model="filename" label="Filename" dense />
         <v-select
           v-model="expiration"
           label="Expiration"
@@ -39,7 +39,7 @@ const expirationList = ref(["1 day", "1 week", "1 month", "1 year"]);
 const usePassword = ref(false);
 const showPassword = ref(false);
 
-const title = ref("");
+const filename = ref("");
 const password = ref("");
 const expiration = ref("1 day");
 
@@ -55,7 +55,7 @@ function savePaste() {
   }
 
   const paste = {
-    name: title.value,
+    name: filename.value,
     type: "text",
     owner: userStore.name,
     content: code.value,
@@ -71,7 +71,7 @@ function savePaste() {
 }
 
 function clearForm() {
-  title.value = "";
+  filename.value = "";
   password.value = "";
   expiration.value = "1 day";
   usePassword.value = false;

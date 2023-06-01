@@ -12,6 +12,13 @@
       <v-scroll-y-reverse-transition origin="top right">
         <div v-if="expand" class="d-flex flex-column">
           <v-btn
+            v-show="homeButton"
+            class="mb-2"
+            icon="mdi-home"
+            size="40"
+            to="/"
+          />
+          <v-btn
             v-show="userStore.loggedIn"
             class="mb-2"
             icon="mdi-account"
@@ -50,6 +57,13 @@ import { useUserStore } from "~/stores/user";
 const expand = ref(false);
 
 const userStore = useUserStore();
+
+const props = defineProps({
+  homeButton: {
+    type: Boolean,
+    default: true,
+  },
+});
 
 const theme = inject("theme");
 const toggleTheme = inject("toggleTheme");

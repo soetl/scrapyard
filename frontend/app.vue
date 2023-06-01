@@ -1,14 +1,16 @@
 <template>
-  <v-app :theme="stored_theme">
-    <nuxt-layout>
-      <nuxt-page />
-      <dialog-log-in />
-      <dialog-log-out />
-    </nuxt-layout>
-  </v-app>
+  <VApp :theme="stored_theme">
+    <NuxtLayout>
+      <NuxtPage />
+      <DialogLogIn />
+      <DialogLogOut />
+    </NuxtLayout>
+  </VApp>
 </template>
 
 <script setup>
+import { useUserStore } from "~/stores/user";
+
 const stored_theme = useCookie("theme", { default: () => "light" });
 const logInDialog = ref(false);
 const logOutDialog = ref(false);
@@ -25,4 +27,10 @@ provide("logInDialog", logInDialog);
 provide("logOutDialog", logOutDialog);
 provide("saveFileDialog", saveFileDialog);
 provide("saveTextDialog", saveTextDialog);
+
+onMounted(() => {
+  const userStore = useUserStore();
+
+  userStore.fetchUser();
+});
 </script>
