@@ -9,10 +9,9 @@ pub struct Paste {
     pub id: i32,
     pub owner: i32,
     pub filename: String,
+    pub mime: String,
     pub link: String,
     pub r#type: String,
-    pub password_protected: bool,
-    pub password_hash: Option<String>,
     pub created_at: DateTime<Utc>,
 }
 
@@ -24,7 +23,7 @@ pub struct PasteJson {
     pub filename: String,
     pub link: String,
     pub r#type: String,
-    pub password_protected: bool,
+    pub mime: String,
     pub created_at: String,
 }
 
@@ -36,7 +35,7 @@ impl Paste {
             filename: self.filename.to_owned(),
             link: self.link.to_owned(),
             r#type: self.r#type.to_owned(),
-            password_protected: self.password_protected,
+            mime: self.mime.to_owned(),
             created_at: self.created_at.format(DATE_FORMAT).to_string(),
         }
     }

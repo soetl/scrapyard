@@ -3,7 +3,6 @@
     <NuxtLayout>
       <NuxtPage />
       <DialogLogIn />
-      <DialogLogOut />
     </NuxtLayout>
   </VApp>
 </template>
@@ -16,6 +15,8 @@ const logInDialog = ref(false);
 const logOutDialog = ref(false);
 const saveFileDialog = ref(false);
 const saveTextDialog = ref(false);
+const changeAvatarDialog = ref(false);
+const confirmDialog = ref(false);
 
 function toggleTheme() {
   stored_theme.value = stored_theme.value === "light" ? "dark" : "light";
@@ -27,6 +28,8 @@ provide("logInDialog", logInDialog);
 provide("logOutDialog", logOutDialog);
 provide("saveFileDialog", saveFileDialog);
 provide("saveTextDialog", saveTextDialog);
+provide("changeAvatarDialog", changeAvatarDialog);
+provide("confirmDialog", confirmDialog);
 
 onMounted(() => {
   const userStore = useUserStore();

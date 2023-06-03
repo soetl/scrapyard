@@ -23,6 +23,7 @@
             class="mb-2"
             icon="mdi-account"
             size="40"
+            :to="'/u/' + userStore.getUsername"
           />
           <v-btn
             class="mb-2"
@@ -49,6 +50,7 @@
       </v-scroll-y-reverse-transition>
     </div>
   </teleport>
+  <dialog-log-out />
 </template>
 
 <script setup>

@@ -9,6 +9,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     colors: {
       background: "#1d2025",
       surface: "#282c34",
+      text: "#ffffff",
+      textplain: "#a1a1a1",
     },
   };
 
@@ -17,6 +19,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     colors: {
       background: "#eeeff1",
       surface: "#fafafa",
+      text: "#212121",
+      textplain: "#a1a1a1",
     },
   };
 

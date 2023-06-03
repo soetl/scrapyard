@@ -42,7 +42,7 @@ pub async fn create_user(
     db.run(move |conn| {
         database::users::create(conn, &username, &password)
             .map(|user| json!({ "user": user.to_auth(&secret) }))
-            .map_err(|_| Errors::new(&[("username", "has already been taken")]))
+            .map_err(|_| Errors::new(&[("username", "taken")]))
     })
     .await
 }
@@ -75,11 +75,21 @@ pub async fn login_user(
     db.run(move |conn| database::users::login(conn, &username, &password))
         .await
         .map(|user| json!({ "user": user.to_auth(&secret) }))
-        .ok_or_else(|| Errors::new(&[("username or password", "is invalid")]))
+        .ok_or_else(|| Errors::new(&[("username_or_password", "is_invalid")]))
 }
 
-#[get("/user")]
-pub async fn get_user(auth: Auth, db: Db, state: &State<AppState>) -> Option<Value> {
+#[get("/user?<username>")]
+pub async fn get_user(username: String, db: Db) -> Option<Value> {
+    let user = db
+        .run(move |conn| database::users::find_by_username(conn, &username))
+        .await
+        .map(|user| json!({ "user": user.to_profile() }));
+
+    user
+}
+
+#[get("/user/whoami")]
+pub async fn get_me(auth: Auth, db: Db, state: &State<AppState>) -> Option<Value> {
     let secret = state.secret.clone();
     db.run(move |conn| database::users::find(conn, auth.id))
         .await

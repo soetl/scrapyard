@@ -16,7 +16,7 @@
                   (v) =>
                     v.length >= 4 || 'Username must be at least 4 characters',
                   (v) =>
-                    v.length <= 32 || 'Username must be at most 16 characters',
+                    v.length <= 16 || 'Username must be at most 16 characters',
                 ]"
                 required
               />
@@ -25,6 +25,7 @@
               <v-text-field
                 label="Password"
                 v-model="password"
+                type="password"
                 :rules="[(v) => !!v || 'Password is required']"
                 required
               />
@@ -61,7 +62,7 @@
                   (v) =>
                     v.length >= 4 || 'Username must be at least 4 characters',
                   (v) =>
-                    v.length <= 32 || 'Username must be at most 16 characters',
+                    v.length <= 16 || 'Username must be at most 16 characters',
                 ]"
                 counter="32"
                 required
@@ -72,12 +73,13 @@
                 label="Password"
                 hint="A strong password must contain mixed case letters and symbols"
                 v-model="password"
+                type="password"
                 :rules="[
                   (v) => !!v || 'Password is required',
                   (v) =>
                     v.length >= 8 || 'Password must be at least 8 characters',
                   (v) =>
-                    v.length <= 24 || 'Password must be at most 24 characters',
+                    v.length <= 32 || 'Password must be at most 24 characters',
                 ]"
                 counter="24"
                 required
@@ -85,6 +87,7 @@
               <v-text-field
                 label="Repeat Password"
                 hint="A strong password must contain mixed case letters and symbols"
+                type="password"
                 :rules="[
                   (v) => !!v || 'Repeat password is required',
                   (v) => v === password || 'Password does not match',
@@ -120,6 +123,7 @@
 
 <script setup>
 import { useUserStore } from "~/stores/user";
+import { createUser, loginUser } from "~/api";
 
 const dialog = inject("logInDialog");
 const isLogIn = ref(true);
@@ -132,14 +136,28 @@ const signUpForm = ref(null);
 const logInForm = ref(null);
 
 const userStore = useUserStore();
-const cookie = useCookie();
 
 async function logIn() {
   status.value = "";
   const { valid } = await logInForm.value.validate();
 
   if (valid) {
-    logInProceed("/api/v1/users/login");
+    const { user, error } = await loginUser(username.value, password.value);
+
+    if (error) {
+      switch (error) {
+        case "username_or_password_invalid":
+          status.value = "Username or password is invalid.";
+          break;
+        default:
+          status.value = "Unknown error. Try again later.";
+      }
+
+      return;
+    }
+
+    userStore.logIn(user.username, user.token);
+    dialog.value = false;
   }
 }
 
@@ -148,36 +166,31 @@ async function signUp() {
   const { valid } = await signUpForm.value.validate();
 
   if (valid) {
-    logInProceed("/api/v1/users", true);
-  }
-}
+    const { user, error } = await createUser(username.value, password.value);
 
-function logInProceed(path, isSignUp = false) {
-  apiFetch(path, {
-    method: "POST",
-    body: {
-      user: {
-        username: username.value,
-        password: password.value,
-      },
-    },
-  })
-    .catch((error) => {
-      if (error.status === 422) {
-        status.value = isSignUp
-          ? "Username already taken."
-          : "Invalid username or password.";
-      } else {
-        console.log(error);
+    if (error) {
+      switch (error) {
+        case "username_taken":
+          status.value = "Username already taken.";
+          break;
+        case "username_length":
+          status.value =
+            "Username must be at least 4 characters and at most 16 characters.";
+          break;
+        case "password_length":
+          status.value =
+            "Password must be at least 8 characters and at most 24 characters.";
+          break;
+        default:
+          status.value = "Unknown error. Try again later.";
       }
-    })
-    .then((response) => {
-      if (response !== undefined) {
-        const user = response.user;
-        userStore.logIn(user.username, user.token);
-        dialog.value = false;
-      }
-    });
+
+      return;
+    }
+
+    userStore.logIn(user.username, user.token);
+    dialog.value = false;
+  }
 }
 
 watch(
@@ -204,6 +217,6 @@ function clearForm() {
 
 <style scoped>
 .status {
-  color: #ff5252;
+  color: rgb(var(--v-theme-error));
 }
 </style>

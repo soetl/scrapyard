@@ -12,9 +12,11 @@
 <script setup>
 import { oneDark } from "@codemirror/theme-one-dark";
 
-const theme = inject("theme");
+const props = defineProps(["text"]);
+const code = shallowRef(props.text);
+const placeholder = ref("Loading...");
 
-const code = ref(`#include <stdio.h>\n\nint main() {\n  printf("Hello World!");\n  return 0;\n}`);
+const theme = inject("theme");
 
 const extensions = computed(() => {
   return theme.value === "light" ? [] : [oneDark];

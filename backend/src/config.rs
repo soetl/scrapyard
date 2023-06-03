@@ -1,6 +1,11 @@
 use std::{collections::HashMap, env};
 
-use rocket::{fairing::AdHoc, figment::Figment, Config};
+use rocket::{
+    data::{Limits, ToByteUnit},
+    fairing::AdHoc,
+    figment::Figment,
+    Config,
+};
 
 use crate::filemanager::FileManager;
 
@@ -37,12 +42,21 @@ impl AppState {
     }
 }
 
-/// Create rocket config from environment variables
 pub fn from_env() -> Figment {
     let port = env::var("PORT")
         .unwrap_or_else(|_| "8080".to_string())
         .parse::<u16>()
         .expect("PORT environment variable should parse to an integer");
+
+    let upload_limit = env::var("UPLOAD_LIMIT")
+        .unwrap_or_else(|_| "10".to_string())
+        .parse::<u64>()
+        .expect("UPLOAD_LIMIT environment variable should parse to an integer")
+        .megabytes();
+
+    let limits = Limits::default()
+        .limit("data-form", upload_limit)
+        .limit("bytes", upload_limit);
 
     let mut database_config = HashMap::new();
     let mut databases = HashMap::new();
@@ -53,5 +67,6 @@ pub fn from_env() -> Figment {
 
     Config::figment()
         .merge(("port", port))
+        .merge(("limits", limits))
         .merge(("databases", databases))
 }

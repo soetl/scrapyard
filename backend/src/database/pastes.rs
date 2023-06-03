@@ -3,7 +3,7 @@ use crate::{
         paste::{Paste, PasteJson},
         user::User,
     },
-    schema::{pastes, users},
+    schema::{pastes, users}, error::Errors,
 };
 
 use diesel::prelude::*;
@@ -18,8 +18,7 @@ struct NewPaste<'a> {
     filename: &'a str,
     link: &'a str,
     type_: &'a str,
-    password_protected: bool,
-    password_hash: Option<&'a str>,
+    mime: &'a str,
 }
 
 pub fn create(
@@ -27,8 +26,7 @@ pub fn create(
     filename: &str,
     owner: i32,
     type_: &str,
-    password_protected: bool,
-    password_hash: Option<&str>,
+    mime: &str,
 ) -> PasteJson {
     let binding = Uuid::new_v4().hyphenated().to_string();
     let new_paste = NewPaste {
@@ -36,8 +34,7 @@ pub fn create(
         link: binding.as_str(),
         owner,
         type_,
-        password_protected,
-        password_hash,
+        mime,
     };
 
     let owner = users::table
@@ -52,9 +49,9 @@ pub fn create(
         .to_json(owner)
 }
 
-#[derive(FromForm, Default)]
+#[derive(FromForm, Default, Debug)]
 pub struct FindPastes {
-    pub owner: Option<i32>,
+    pub owner: Option<String>,
     pub limit: Option<i64>,
     pub offset: Option<i64>,
 }
@@ -65,11 +62,12 @@ pub fn find(conn: &mut PgConnection, params: &FindPastes) -> (Vec<PasteJson>, i6
         .select((pastes::all_columns, users::all_columns))
         .into_boxed();
 
-    if let Some(owner) = params.owner {
-        query = query.filter(users::id.eq(owner));
+    if let Some(owner) = &params.owner {
+        query = query.filter(users::username.eq(owner));
     };
 
     query
+        .order(pastes::created_at.desc())
         .limit(params.limit.unwrap_or(DEFAULT_LIMIT))
         .offset(params.offset.unwrap_or(0))
         .load::<(Paste, User)>(conn)
@@ -95,14 +93,17 @@ pub fn find_one(conn: &mut PgConnection, link: &str) -> Option<PasteJson> {
     Some(populate(conn, paste))
 }
 
-pub fn delete(conn: &mut PgConnection, link: &str, user_id: i32) {
+pub fn delete(conn: &mut PgConnection, link: &str, user_id: i32) -> Result<(), Errors> {
     let result =
         diesel::delete(pastes::table.filter(pastes::link.eq(link).and(pastes::owner.eq(user_id))))
             .execute(conn);
 
     if let Err(e) = result {
         println!("pastes::delete: {}", e);
+        return Err(Errors::new(&[("paste", "db_delete_failed")]));
     }
+
+    Ok(())
 }
 
 fn populate(conn: &mut PgConnection, paste: Paste) -> PasteJson {

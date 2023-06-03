@@ -1,7 +1,13 @@
-use crate::{schema::users, models::user::User};
+use crate::{models::user::User, schema::users};
 
-use diesel::{prelude::*, result::{Error, DatabaseErrorKind}};
-use scrypt::{password_hash::{SaltString, rand_core::OsRng, PasswordHasher, PasswordHash, PasswordVerifier}, Scrypt};
+use diesel::{
+    prelude::*,
+    result::{DatabaseErrorKind, Error},
+};
+use scrypt::{
+    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    Scrypt,
+};
 use serde::Deserialize;
 
 #[derive(Insertable)]
@@ -23,14 +29,12 @@ impl From<Error> for UserCreationError {
             Error::DatabaseError(DatabaseErrorKind::UniqueViolation, e) => {
                 match e.constraint_name() {
                     Some("users_username_key") => UserCreationError::UsernameTaken,
-                    _ => {
-                        UserCreationError::UnknownViolation(e.constraint_name().unwrap_or("Unknown").to_owned())
-                    },
+                    _ => UserCreationError::UnknownViolation(
+                        e.constraint_name().unwrap_or("Unknown").to_owned(),
+                    ),
                 }
             }
-            e => {
-                UserCreationError::Unknown(e)
-            }
+            e => UserCreationError::Unknown(e),
         }
     }
 }
@@ -59,11 +63,7 @@ pub fn create(
         .map_err(|e| e.into())
 }
 
-pub fn login(
-    conn: &mut PgConnection,
-    username: &str,
-    password: &str,
-) -> Option<User> {
+pub fn login(conn: &mut PgConnection, username: &str, password: &str) -> Option<User> {
     let user = users::table
         .filter(users::username.eq(username))
         .get_result::<User>(conn)
@@ -81,7 +81,7 @@ pub fn login(
         false => {
             eprintln!("login_user: password mismatch for user {}", username);
             None
-        },
+        }
     }
 }
 
@@ -113,10 +113,11 @@ pub struct UpdateUserData {
 
 pub fn update(conn: &mut PgConnection, id: i32, data: &UpdateUserData) -> Option<User> {
     let data = &UpdateUserData {
+        username: None,
         password: None,
         ..data.clone()
     };
-    
+
     diesel::update(users::table.find(id))
         .set(data)
         .get_result(conn)

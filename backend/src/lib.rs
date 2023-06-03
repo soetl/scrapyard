@@ -50,13 +50,13 @@ pub fn rocket() -> _ {
                 routes::users::create_user,
                 routes::users::login_user,
                 routes::users::get_user,
+                routes::users::get_me,
                 routes::users::update_user,
                 routes::pastes::upload_paste,
                 routes::pastes::download_paste,
                 routes::pastes::get_pastes,
                 routes::pastes::get_paste,
                 routes::pastes::delete_paste,
-                routes::profiles::get_profile,
             ],
         )
         .attach(database::Db::fairing())

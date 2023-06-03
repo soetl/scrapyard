@@ -1,24 +1,19 @@
 <template>
   <v-dialog v-model="dialog" persistent width="512">
     <v-card>
-      <v-card-title>Save File: {{ props.context.name }}</v-card-title>
+      <v-card-title>Save File</v-card-title>
       <v-card-text>
-        <v-text-field v-model="filename" label="Filename" dense />
-        <v-select
-          v-model="expiration"
-          label="Expiration"
-          :items="expirationList"
-        />
-        <v-switch v-model="usePassword" label="Use password" />
-        <v-text-field
-          v-if="usePassword"
-          v-model="password"
-          label="Password"
-          dense
-          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          :type="showPassword ? 'text' : 'password'"
-          @click:append="showPassword = !showPassword"
-        />
+        <v-form ref="saveForm">
+          <v-text-field
+            v-model="filename"
+            label="Filename"
+            :rules="[
+              (v) => v.length >= 1 || 'Filename must be at least 1 character',
+              (v) => v.length <= 32 || 'Filename must be at most 32 characters',
+            ]"
+            dense
+          />
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -30,59 +25,70 @@
 </template>
 
 <script setup>
-import { usePastesStore } from "~/stores/pastes";
+import { uploadPaste } from "~/api";
 import { useUserStore } from "~/stores/user";
-
-const expirationList = ref(["1 day", "1 week", "1 month", "1 year"]);
-const usePassword = ref(false);
-const showPassword = ref(false);
-
-const filename = ref("");
-const password = ref("");
-const expiration = ref("1 day");
-
-const userStore = useUserStore();
-const pastesStore = usePastesStore();
 
 const props = defineProps({
   context: {
     required: true,
   },
 });
+
+const filename = ref("");
+const saveForm = ref(null);
+
+const userStore = useUserStore();
+
 const dialog = inject("saveFileDialog");
 const logInDialog = inject("logInDialog");
 
-function saveFile() {
+watch(dialog, async (value, _) => {
+  if (value) {
+    clearForm();
+    setTimeout(() => {
+      filename.value = props.context.name;
+    }, 100);
+  }
+});
+
+async function saveFile() {
   if (!userStore.loggedIn) {
     logInDialog.value = true;
     return;
   }
 
-  if (!filename.value) {
-    filename.value = props.context.name;
+  const { valid } = await saveForm.value.validate();
+
+  if (!valid) {
+    return;
   }
 
-  const file = {
-    name: filename.value,
-    type: "file",
-    owner: userStore.name,
-    content: props.context,
-    password: usePassword.value ? password.value : null,
-    expiration: expiration.value,
-  };
-  
-  pastesStore.addPaste(file);
+  const { paste, error } = await uploadPaste(
+    userStore.token,
+    filename.value,
+    "file",
+    props.context
+  );
 
-  console.log(pastesStore.pastes);
+  if (error) {
+    console.error(error);
 
-  clearForm();
+    return;
+  }
+
   dialog.value = false;
+  clearForm();
+
+  navigateTo(`/f/${paste.paste.link}`);
 }
 
 function clearForm() {
   filename.value = "";
-  password.value = "";
-  expiration.value = "1 day";
-  usePassword.value = false;
 }
 </script>
+
+<style scoped>
+.status {
+  color: rgb(var(--v-theme-error));
+}
+</style>

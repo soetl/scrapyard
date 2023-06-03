@@ -3,22 +3,17 @@
     <v-card>
       <v-card-title>Save Text</v-card-title>
       <v-card-text>
-        <v-text-field v-model="filename" label="Filename" dense />
-        <v-select
-          v-model="expiration"
-          label="Expiration"
-          :items="expirationList"
-        />
-        <v-switch v-model="usePassword" label="Use password" />
-        <v-text-field
-          v-if="usePassword"
-          v-model="password"
-          label="Password"
-          dense
-          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          :type="showPassword ? 'text' : 'password'"
-          @click:append="showPassword = !showPassword"
-        />
+        <v-form ref="saveForm">
+          <v-text-field
+            v-model="filename"
+            label="Filename"
+            :rules="[
+              (v) => v.length >= 1 || 'Filename must be at least 1 character',
+              (v) => v.length <= 32 || 'Filename must be at most 32 characters',
+            ]"
+            dense
+          />
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -30,50 +25,49 @@
 </template>
 
 <script setup>
-import { usePastesStore } from "~/stores/pastes";
+import { uploadPaste } from "~/api";
 import { useUserStore } from "~/stores/user";
 
-const dialog = inject("saveTextDialog");
-
-const expirationList = ref(["1 day", "1 week", "1 month", "1 year"]);
-const usePassword = ref(false);
-const showPassword = ref(false);
-
 const filename = ref("");
-const password = ref("");
-const expiration = ref("1 day");
+const saveForm = ref(null);
 
 const userStore = useUserStore();
-const pastesStore = usePastesStore();
 
+const dialog = inject("saveTextDialog");
 const code = inject("code");
 
-function savePaste() {
+async function savePaste() {
   if (!userStore.loggedIn) {
     logInDialog.value = true;
     return;
   }
 
-  const paste = {
-    name: filename.value,
-    type: "text",
-    owner: userStore.name,
-    content: code.value,
-    password: usePassword.value ? password.value : null,
-    expiration: expiration.value,
-  };
+  const { valid } = await saveForm.value.validate();
 
-  pastesStore.addPaste(paste);
-  console.log(pastesStore.pastes);
+  if (!valid) {
+    return;
+  }
+
+  const { paste, error } = await uploadPaste(
+    userStore.token,
+    filename.value,
+    "text",
+    new Blob([code.value], { type: "text/plain" })
+  );
+
+  if (error) {
+    console.error(error);
+
+    return;
+  }
 
   clearForm();
   dialog.value = false;
+
+  navigateTo(`/p/${paste.paste.link}`);
 }
 
 function clearForm() {
   filename.value = "";
-  password.value = "";
-  expiration.value = "1 day";
-  usePassword.value = false;
 }
 </script>

@@ -5,11 +5,10 @@ diesel::table! {
         id -> Int4,
         owner -> Int4,
         filename -> Text,
+        mime -> Text,
         link -> Text,
         #[sql_name = "type"]
         type_ -> Text,
-        password_protected -> Bool,
-        password_hash -> Nullable<Text>,
         created_at -> Timestamptz,
     }
 }

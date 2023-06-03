@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { getCurrentUser } from "~/api";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -6,38 +7,34 @@ export const useUserStore = defineStore("user", {
     token: "",
   }),
   getters: {
-    loggedIn: (state) => state.username !== "",
+    loggedIn: (state) => state.username != "",
+    getUsername: (state) => state.username,
+    getToken: (state) => state.token,
   },
   actions: {
-    logIn(name, token) {
-      this.name = name;
+    logIn(username, token) {
+      this.username = username;
       this.token = token;
     },
 
     logOut() {
-      this.name = "";
+      this.username = "";
       this.token = "";
     },
 
-    fetchUser() {
+    async fetchUser() {
       if (this.token === "" || this.token === undefined || this.token === null) {
+        this.logOut();
         return;
       }
 
-      apiFetch("/api/v1/user", {
-        headers: {
-          Authorization: `Token ${this.token}`,
-        },
-      })
-        .catch(() => {
-          this.logOut();
-        })
-        .then((response) => {
-          console.log(response);
-          if (response !== undefined) {
-            this.username = response.username;
-          }
-        });
+      const { user, error } = await getCurrentUser(this.token);
+
+      if (error) {
+        this.logOut();
+      }
+
+      this.logIn(user.username, this.token);
     },
   },
   persist: {
