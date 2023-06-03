@@ -56,13 +56,15 @@ const imageSrc = ref(
 );
 const link = ref(props.item.link);
 const route = ref(`${props.item.type === "file" ? "/f" : "/p"}/${link.value}`);
-const date = ref(dateParse(props.item.createdAt).toLocaleString("en-GB", {
-  hour: "2-digit",
-  minute: "2-digit",
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-}));
+const date = ref(
+  dateParse(props.item.createdAt).toLocaleString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  })
+);
 date.value = date.value.replace(",", " at");
 
 async function loadImage(link, filename, mime) {

@@ -10,7 +10,10 @@
 <script setup>
 import { useUserStore } from "~/stores/user";
 
-const stored_theme = useCookie("theme", { default: () => "light" });
+const stored_theme = useCookie("theme", {
+  default: () => "light",
+  sameSite: true,
+});
 const logInDialog = ref(false);
 const logOutDialog = ref(false);
 const saveFileDialog = ref(false);

@@ -12,8 +12,8 @@
         />
       </v-card-text>
       <v-card-actions class="justify-end">
-        <v-btn variant="outlined" @click="dialog = false">Cancel</v-btn>
-        <v-btn variant="outlined" class="ml-4" @click="saveAvatar">Save</v-btn>
+        <v-btn @click="dialog = false">Cancel</v-btn>
+        <v-btn class="ml-4" @click="saveAvatar">Save</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

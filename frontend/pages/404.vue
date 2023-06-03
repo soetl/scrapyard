@@ -12,4 +12,5 @@
       </v-card>
     </v-container>
   </v-main>
+  <floating-menu />
 </template>

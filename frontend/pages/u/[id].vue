@@ -120,13 +120,13 @@ async function deletePasteEmited(link) {
 
 async function deletePasteConfirm() {
   await deletePaste(userStorage.getToken, deleteLink.value);
-  pastes.value = pastes.value.filter((paste) => paste.link !== deleteLink.value);
+  pastes.value = pastes.value.filter(
+    (paste) => paste.link !== deleteLink.value
+  );
   deleteLink.value = "";
 }
 
-function downloadPasteEmited() {
-
-}
+function downloadPasteEmited() {}
 
 async function nextPage() {
   const { pastes: raw_pastes, error: pasteError } = await getPastes(

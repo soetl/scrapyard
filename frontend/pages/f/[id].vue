@@ -32,10 +32,9 @@
               <nuxt-link :to="'/u/' + paste.owner">{{ paste.owner }}</nuxt-link>
             </div>
             <div class="d-flex justify-end">
-              <v-btn variant="outlined" @click="downloadButton">Download</v-btn>
+              <v-btn @click="downloadButton">Download</v-btn>
               <v-btn
                 v-if="paste.owner === userStore.getUsername"
-                variant="outlined"
                 class="ml-4"
                 @click="confirmDialog = true"
               >
