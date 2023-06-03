@@ -110,7 +110,7 @@ pub async fn delete_paste(
         .run(move |conn| database::pastes::find_one(conn, &link_copy))
         .await;
 
-    if let None = this_paste {
+    if this_paste.is_none() {
         return Err(Errors::new(&[("paste", "not_found")]));
     }
 

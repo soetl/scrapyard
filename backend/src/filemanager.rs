@@ -1,4 +1,6 @@
-use s3::{creds::Credentials, error::S3Error, Bucket, BucketConfiguration, Region, request::ResponseData};
+use s3::{
+    creds::Credentials, error::S3Error, request::ResponseData, Bucket, BucketConfiguration, Region,
+};
 
 pub struct FileManager {
     bucket: Bucket,
@@ -40,7 +42,7 @@ impl FileManager {
     }
 
     pub async fn upload(&self, filename: &str, data: &[u8]) -> Result<ResponseData, S3Error> {
-        self.bucket.put_object(filename, &data).await
+        self.bucket.put_object(filename, data).await
     }
 
     pub async fn download(&self, filename: &str) -> Result<ResponseData, S3Error> {

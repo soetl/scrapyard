@@ -38,7 +38,7 @@ impl User {
 
         UserAuth {
             username: &self.username,
-            image: self.image.as_ref().map(String::as_str),
+            image: self.image.as_deref(),
             token,
         }
     }

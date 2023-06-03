@@ -80,12 +80,9 @@ pub async fn login_user(
 
 #[get("/user?<username>")]
 pub async fn get_user(username: String, db: Db) -> Option<Value> {
-    let user = db
-        .run(move |conn| database::users::find_by_username(conn, &username))
+    db.run(move |conn| database::users::find_by_username(conn, &username))
         .await
-        .map(|user| json!({ "user": user.to_profile() }));
-
-    user
+        .map(|user| json!({ "user": user.to_profile() }))
 }
 
 #[get("/user/whoami")]

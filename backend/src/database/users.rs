@@ -50,7 +50,7 @@ pub fn create(
         .hash_password(password.as_bytes(), &salt)
         .expect("Failed to hash password")
         .to_string()
-        .to_owned();
+        ;
 
     let new_user = NewUser {
         username,
