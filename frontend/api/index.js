@@ -115,8 +115,6 @@ export async function updateUser(token, image_url) {
 }
 
 export async function uploadPaste(token, filename, type, content) {
-  console.log("fileSize: ", content.size);
-
   const form = new FormData();
   form.append("content", content);
   form.append("filename", filename);
