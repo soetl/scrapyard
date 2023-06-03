@@ -14,7 +14,7 @@
             </div>
 
             <div class="">
-              <v-btn variant="outlined" class="ml-4">Copy</v-btn>
+              <v-btn variant="outlined" class="ml-4" @click="copy(text)">Copy</v-btn>
               <v-btn variant="outlined" class="ml-4" @click="downloadButton">
                 Download
               </v-btn>
@@ -44,11 +44,13 @@ import { downloadPaste, getPaste } from "~/api";
 import { useUserStore } from "~/stores/user";
 import { useClipboard } from "@vueuse/core";
 
-const text = ref("asd");
+const text = ref("placeholder");
 
 const route = useRoute();
 
 const { paste: raw_paste, error: error } = await getPaste(route.params.id);
+
+const { copy } = useClipboard({ text });
 
 const userStore = useUserStore();
 
@@ -89,11 +91,6 @@ async function deleteConfirm() {
     console.log(error);
     return;
   }
-}
-
-function copyToClipboard() {
-  const { copy } = useClipboard();
-  copy(text.value);
 }
 </script>
 
