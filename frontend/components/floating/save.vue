@@ -13,12 +13,17 @@
 <script setup>
 import { useUserStore } from "~/stores/user";
 
+const code = inject("code");
 const saveTextDialog = inject("saveTextDialog");
 const logInDialog = inject("logInDialog");
 
 const userStore = useUserStore();
 
 function saveText() {
+  if (code.value === "") {
+    return;
+  }
+
   if (!userStore.loggedIn) {
     logInDialog.value = true;
     return;
