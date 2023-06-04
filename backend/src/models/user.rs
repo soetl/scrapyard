@@ -28,7 +28,7 @@ pub struct UserProfile {
 
 impl User {
     pub fn to_auth(&self, secret: &[u8]) -> UserAuth {
-        let exp = Utc::now() + Duration::days(34);
+        let exp = Utc::now() + Duration::days(30);
         let token = Auth {
             id: self.id,
             username: self.username.clone(),
