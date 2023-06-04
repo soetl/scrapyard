@@ -4,7 +4,7 @@
     <v-card-subtitle>{{ date }}</v-card-subtitle>
     <v-card-text>
       <v-img
-        class="image"
+        class="image border"
         v-bind="props"
         :aspect-ratio="4 / 3"
         cover
@@ -13,7 +13,7 @@
       >
         <template v-slot:error v-slot:placeholder>
           <div
-            class="d-flex align-center justify-center fill-height border image"
+            class="d-flex align-center justify-center fill-height"
           >
             <v-icon
               size="128px"

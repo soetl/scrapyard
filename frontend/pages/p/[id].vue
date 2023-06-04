@@ -14,11 +14,12 @@
             </div>
 
             <div class="">
-              <v-btn class="ml-4" @click="copy(text)">Copy</v-btn>
-              <v-btn class="ml-4" @click="downloadButton"> Download </v-btn>
+              <v-btn class="ml-4" variant="text" @click="copy(text)">Copy</v-btn>
+              <v-btn class="ml-4" variant="text" @click="downloadButton"> Download </v-btn>
               <v-btn
                 v-if="paste.owner === userStore.getUsername"
                 class="ml-4"
+                variant="text"
                 @click="confirmDialog = true"
               >
                 Delete

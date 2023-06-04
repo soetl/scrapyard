@@ -12,7 +12,7 @@
               rounded="lg"
               :src="imageSrc"
               cover
-              class="image mr-4"
+              class="image mr-4 border"
             >
               <template v-slot:error v-slot:placeholder>
                 <div class="d-flex align-center justify-center fill-height">
@@ -32,10 +32,11 @@
               <nuxt-link :to="'/u/' + paste.owner">{{ paste.owner }}</nuxt-link>
             </div>
             <div class="d-flex justify-end">
-              <v-btn @click="downloadButton">Download</v-btn>
+              <v-btn variant="text" @click="downloadButton">Download</v-btn>
               <v-btn
                 v-if="paste.owner === userStore.getUsername"
                 class="ml-4"
+                variant="text"
                 @click="confirmDialog = true"
               >
                 Delete

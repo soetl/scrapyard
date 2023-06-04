@@ -149,11 +149,12 @@ async function nextPage() {
 <style scoped>
 .avatar {
   border-radius: 50%;
+  width: 200px;
   background-color: rgb(var(--v-theme-primary));
 }
 
 .nickname {
-  max-width: 256px;
+  max-width: 384px;
   display: inline-block;
 }
 </style>
