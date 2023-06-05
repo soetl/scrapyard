@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  migration:
+    build: .
+    container_name: migration
+    environment:
+      - DATABASE_URL=postgres://PGUSER:PGPASSWORD@database/scrapyard # postgres://user:password@host/database
+    volumes:
+      - ./backend/migrations:/migrations
+    command: bash -c 'while !</dev/tcp/database/5432; do sleep 1; done; sleep 5; diesel migration run'
+  backend:
+    build: ./backend
+    container_name: backend
+    restart: on-failure
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://PGUSER:PGPASSWORD@database/scrapyard # postgres://user:password@host/database
+      - SECRET_KEY=BASE64_ENCODED_SECRET_KEY # openssl rand -base64 32
+      - AWS_ACCESS_KEY_ID=ACCESS_KEY_ID # minio user
+      - AWS_SECRET_ACCESS_KEY=SECRET_ACCESS_KEY # minio password
+      - UPLOAD_LIMIT_MB=50 # max upload size in MB
+    command: bash -c 'while !</dev/tcp/database/5432; do sleep 1; done; sleep 10; backend'
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    hostname: frontend
+    ports:
+      - "127.0.0.1:8080:3000"
+    command: "npm start"
+    links:
+      - backend
+  database:
+    image: postgres:15
+    container_name: database
+    restart: always
+    expose:
+      - "5432"
+    volumes:
+      - pgdata:/data/postgres
+    environment:
+      - POSTGRES_USER=PGUSER # postgres user
+      - POSTGRES_PASSWORD=PGPASSWORD # postgres password
+      - POSTGRES_DB=scrapyard # postgres database
+      - PGDATA=/data/postgres # postgres data directory
+  storage:
+    image: minio/minio
+    container_name: storage
+    ports:
+      - "9000:9000"
+    volumes:
+      - storage:/data
+    environment:
+      - MINIO_ROOT_USER=ACCESS_KEY_ID # minio user
+      - MINIO_ROOT_PASSWORD=SECRET_ACCESS_KEY # minio password
+    command: server /data
+
+volumes:
+  pgdata: 
+    driver: local
+  storage:

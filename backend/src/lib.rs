@@ -41,8 +41,7 @@ fn cors_fairing() -> Cors {
 
 #[launch]
 pub fn rocket() -> _ {
-    dotenv::dotenv().ok();
-
+    //dotenv::dotenv().ok();
     rocket::custom(config::from_env())
         .mount(
             "/api/v1",

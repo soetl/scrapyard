@@ -11,7 +11,7 @@ impl FileManager {
         let bucket_name = "scrapyard";
         let region = Region::Custom {
             region: "eu-central-1".to_owned(),
-            endpoint: "http://localhost:9000".to_owned(),
+            endpoint: "http://storage:9000".to_owned(),
         };
         let credentials = Credentials::default().unwrap();
 

@@ -1,4 +1,4 @@
-use std::{collections::HashMap, env};
+use std::{collections::HashMap, env, net::{IpAddr, Ipv4Addr}};
 
 use rocket::{
     data::{Limits, ToByteUnit},
@@ -23,7 +23,6 @@ pub struct AppState {
 impl AppState {
     pub fn manage() -> AdHoc {
         AdHoc::on_ignite("Manage config", |rocket| async move {
-            // Rocket doesn't expose it's own secret_key, so we use our own here.
             let secret = env::var("SECRET_KEY").unwrap_or_else(|err| {
                 if cfg!(debug_assertions) {
                     SECRET.to_string()
@@ -43,8 +42,9 @@ impl AppState {
 }
 
 pub fn from_env() -> Figment {
+    let address = IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0));
     let port = env::var("PORT")
-        .unwrap_or_else(|_| "8080".to_string())
+        .unwrap_or_else(|_| "8000".to_string())
         .parse::<u16>()
         .expect("PORT environment variable should parse to an integer");
 
@@ -69,4 +69,5 @@ pub fn from_env() -> Figment {
         .merge(("port", port))
         .merge(("limits", limits))
         .merge(("databases", databases))
+        .merge(("address", address))
 }
